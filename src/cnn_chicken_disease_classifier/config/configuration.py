@@ -3,7 +3,9 @@ from cnn_chicken_disease_classifier.utils.common import read_yaml, create_direct
 from cnn_chicken_disease_classifier.entity.config_entity import (
     DataIngestionConfig,
     PrepareBaseModelConfig,
+    PrepareCallbacksConfig,
 )
+import os
 
 
 class ConfigurationManager:
@@ -46,3 +48,27 @@ class ConfigurationManager:
         )
 
         return prepare_base_model_config
+
+
+class ConfigurationManager:
+    def __init__(
+        self, config_filepath=CONFIG_FILE_PATH, params_filepath=PARAMS_FILE_PATH
+    ):
+        self.config = read_yaml(config_filepath)
+        self.params = read_yaml(params_filepath)
+        create_directories([self.config.artifacts_root])
+
+    def get_prepare_callback_config(self) -> PrepareCallbacksConfig:
+        config = self.config.prepare_callbacks
+        model_ckpt_dir = os.path.dirname(config.checkpoint_model_filepath)
+        create_directories(
+            [Path(model_ckpt_dir), Path(config.tensorboard_root_log_dir)]
+        )
+
+        prepare_callback_config = PrepareCallbacksConfig(
+            root_dir=Path(config.root_dir),
+            tensorboard_root_log_dir=Path(config.tensorboard_root_log_dir),
+            checkpoint_model_filepath=Path(config.checkpoint_model_filepath),
+        )
+
+        return prepare_callback_config
