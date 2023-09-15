@@ -1,3 +1,5 @@
+import os
+from pathlib import Path
 from cnn_chicken_disease_classifier.constants import *
 from cnn_chicken_disease_classifier.utils.common import read_yaml, create_directories
 from cnn_chicken_disease_classifier.entity.config_entity import (
@@ -5,8 +7,8 @@ from cnn_chicken_disease_classifier.entity.config_entity import (
     PrepareBaseModelConfig,
     PrepareCallbacksConfig,
     TrainingConfig,
+    EvaluationConfig,
 )
-import os
 
 
 class ConfigurationManager:
@@ -86,3 +88,13 @@ class ConfigurationManager:
         )
 
         return training_config
+
+    def get_validation_config(self) -> EvaluationConfig:
+        eval_config = EvaluationConfig(
+            path_of_model=Path("artifacts/training/model.h5"),
+            training_data=Path("artifacts/data_ingestion/Chicken-fecal-images"),
+            all_params=self.params,
+            params_image_size=self.params.IMAGE_SIZE,
+            params_batch_size=self.params.BATCH_SIZE,
+        )
+        return eval_config
